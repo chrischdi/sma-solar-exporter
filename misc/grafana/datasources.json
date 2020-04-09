@@ -1,0 +1,45 @@
+{
+  "apiVersion": 1,
+  "datasources": [
+    {
+      "id": 1,
+      "orgId": 1,
+      "name": "Prometheus",
+      "type": "prometheus",
+      "typeLogoUrl": "public/app/plugins/datasource/prometheus/img/prometheus_logo.svg",
+      "access": "proxy",
+      "url": "http://thanos-query.thanos:9090",
+      "isDefault": true,
+      "jsonData": {},
+      "readOnly": false
+    },
+    {
+      "id": 2,
+      "orgId": 1,
+      "name": "PromShift +-1h",
+      "type": "prometheus",
+      "typeLogoUrl": "public/app/plugins/datasource/prometheus/img/prometheus_logo.svg",
+      "access": "proxy",
+      "url": "http://127.0.0.1:9090",
+      "isDefault": false,
+      "jsonData": {
+        "customQueryParameters": "promshift_start=-1s\u0026promshift_end=-1s\u0026promshift_time=-1s"
+      },
+      "readOnly": false
+    },
+    {
+      "id": 3,
+      "orgId": 1,
+      "name": "PromShift Table Adjusted",
+      "type": "prometheus",
+      "typeLogoUrl": "public/app/plugins/datasource/prometheus/img/prometheus_logo.svg",
+      "access": "proxy",
+      "url": "http://127.0.0.1:9090",
+      "isDefault": false,
+      "jsonData": {
+        "customQueryParameters": "promshift_start=23h59m59s\u0026promshift_end=-1s"
+      },
+      "readOnly": false
+    }
+  ]
+}

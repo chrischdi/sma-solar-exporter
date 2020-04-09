@@ -1,0 +1,620 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_PROMETHEUS",
+      "label": "Prometheus",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "prometheus",
+      "pluginName": "Prometheus"
+    },
+    {
+      "name": "DS_PROMSHIFT_TABLE ADJUSTED",
+      "label": "PromShift Table Adjusted",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "prometheus",
+      "pluginName": "Prometheus"
+    },
+    {
+      "name": "DS_PROMSHIFT_+-1H",
+      "label": "PromShift +-1h",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "prometheus",
+      "pluginName": "Prometheus"
+    }
+  ],
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "7.1.0-52bdb4f2pre"
+    },
+    {
+      "type": "panel",
+      "id": "graph",
+      "name": "Graph",
+      "version": ""
+    },
+    {
+      "type": "datasource",
+      "id": "prometheus",
+      "name": "Prometheus",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "stat",
+      "name": "Stat",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "table",
+      "name": "Table",
+      "version": ""
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": false,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "decimals": 2,
+          "mappings": [],
+          "noValue": "",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 10
+              }
+            ]
+          },
+          "title": "",
+          "unit": "kwatth"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "hideTimeOverride": true,
+      "id": 16,
+      "interval": "1d",
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "values": false
+        }
+      },
+      "pluginVersion": "7.1.0-52bdb4f2pre",
+      "targets": [
+        {
+          "expr": "sum(max(increase(sma_feeding_energy_total[1d])) by (serial))",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "Summe",
+          "refId": "A"
+        },
+        {
+          "expr": "max(increase(sma_feeding_energy_total[1d])) by (serial)",
+          "format": "time_series",
+          "instant": true,
+          "interval": "1d",
+          "legendFormat": "SN: {{serial}}",
+          "refId": "B"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": "0d/d",
+      "title": "Gesamteinspeißung am letzten Tag im Zeitraum / Heute",
+      "type": "stat"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "decimals": 2,
+          "mappings": [],
+          "noValue": "",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 10
+              }
+            ]
+          },
+          "title": "",
+          "unit": "kwatth"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "hideTimeOverride": false,
+      "id": 17,
+      "interval": "",
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "values": false
+        }
+      },
+      "pluginVersion": "7.1.0-52bdb4f2pre",
+      "targets": [
+        {
+          "expr": "sum(max(max_over_time(sma_feeding_energy_total[90d])) by (serial))",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "Summe",
+          "refId": "A"
+        },
+        {
+          "expr": "max(max_over_time(sma_feeding_energy_total[90d])) by (serial)",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "SN: {{serial}}",
+          "refId": "C"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Gesamteinspeißung seit 2011",
+      "type": "stat"
+    },
+    {
+      "datasource": "${DS_PROMSHIFT_TABLE ADJUSTED}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "left",
+            "displayMode": "auto"
+          },
+          "decimals": 2,
+          "links": [
+            {
+              "title": "",
+              "url": ""
+            }
+          ],
+          "mappings": [],
+          "noValue": "",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "title": "Summe",
+          "unit": "kwatth"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{serial=\"2100501820\"}"
+            },
+            "properties": [
+              {
+                "id": "title",
+                "value": "2100501820"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{serial=\"2100513266\"}"
+            },
+            "properties": [
+              {
+                "id": "title",
+                "value": "2100513266"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 18,
+        "w": 5,
+        "x": 0,
+        "y": 5
+      },
+      "hideTimeOverride": true,
+      "id": 18,
+      "interval": "1d",
+      "options": {
+        "angular": {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "fill": 1,
+          "fillGradient": 0,
+          "hiddenSeries": false,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "nullPointMode": "null",
+          "options": {
+            "dataLinks": []
+          },
+          "percentage": false,
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "thresholds": [],
+          "timeRegions": [],
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        "frameIndex": 0,
+        "showHeader": true
+      },
+      "pluginVersion": "7.1.0-52bdb4f2pre",
+      "repeatDirection": "v",
+      "targets": [
+        {
+          "expr": "sum(max(increase(sma_feeding_energy_total[1d])) by (serial))",
+          "format": "table",
+          "hide": false,
+          "instant": false,
+          "interval": "1d",
+          "legendFormat": "",
+          "refId": "A"
+        },
+        {
+          "expr": "max(increase(sma_feeding_energy_total[1d])) by (serial)",
+          "hide": true,
+          "interval": "1d",
+          "legendFormat": "",
+          "refId": "B"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": "0d/d",
+      "title": "kWh/Tag im Zeitraum",
+      "transformations": [
+        {
+          "id": "seriesToColumns",
+          "options": {}
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": "${DS_PROMSHIFT_TABLE ADJUSTED}",
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "decimals": 2,
+          "mappings": [],
+          "noValue": "",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 10
+              }
+            ]
+          },
+          "title": "",
+          "unit": "kwatth"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 19,
+        "x": 5,
+        "y": 5
+      },
+      "hideTimeOverride": true,
+      "id": 11,
+      "interval": "1d",
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "values": false
+        }
+      },
+      "pluginVersion": "7.1.0-52bdb4f2pre",
+      "targets": [
+        {
+          "expr": "sum(max(increase(sma_feeding_energy_total[$__interval])) by (serial))",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "Summe",
+          "refId": "A"
+        },
+        {
+          "expr": "max(increase(sma_feeding_energy_total[$__interval])) by (serial)",
+          "format": "time_series",
+          "instant": false,
+          "interval": "1d",
+          "legendFormat": "SN: {{serial}}",
+          "refId": "B"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": "0d/d",
+      "title": "Gesamteinspeißung im Zeitraum",
+      "type": "stat"
+    },
+    {
+      "aliasColors": {},
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_PROMSHIFT_+-1H}",
+      "decimals": 2,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": null
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 16,
+        "w": 19,
+        "x": 5,
+        "y": 7
+      },
+      "hiddenSeries": false,
+      "hideTimeOverride": true,
+      "id": 8,
+      "interval": "1d",
+      "legend": {
+        "alignAsTable": false,
+        "avg": true,
+        "current": false,
+        "hideEmpty": true,
+        "hideZero": false,
+        "max": true,
+        "min": false,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": false,
+      "linewidth": 1,
+      "nullPointMode": "connected",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pluginVersion": "7.0.0-beta1",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "alias": "2100501820",
+          "zindex": 1
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "sum(max(increase(sma_feeding_energy_total[$__interval])) by (serial))",
+          "hide": false,
+          "interval": "1d",
+          "legendFormat": "Summe",
+          "refId": "B"
+        },
+        {
+          "expr": "max(increase(sma_feeding_energy_total{}[$__interval])) by (serial)",
+          "interval": "1d",
+          "legendFormat": "{{serial}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": "0d/d+12h",
+      "title": "kWh/Tag im Zeitraum",
+      "tooltip": {
+        "shared": true,
+        "sort": 2,
+        "value_type": "individual"
+      },
+      "transformations": [],
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "kwatth",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "kwatth",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    }
+  ],
+  "refresh": false,
+  "schemaVersion": 24,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now/M",
+    "to": "now"
+  },
+  "timepicker": {
+    "hidden": false,
+    "nowDelay": "",
+    "refresh_intervals": [
+      "365d"
+    ]
+  },
+  "timezone": "utc",
+  "title": "Photovoltaik Raspi",
+  "uid": "Pjc-I4eWz",
+  "version": 1
+}
