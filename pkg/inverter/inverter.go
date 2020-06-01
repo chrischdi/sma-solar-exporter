@@ -11,7 +11,6 @@ type Inverter struct {
 	SerialNumber uint
 	Name         string
 	Channels     map[string]*Channel
-	// MetaData     map[string]string
 }
 
 func NewInverter(deviceHandle int) (*Inverter, error) {

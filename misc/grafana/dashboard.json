@@ -282,7 +282,7 @@
       },
       "gridPos": {
         "h": 18,
-        "w": 5,
+        "w": 8,
         "x": 0,
         "y": 5
       },
@@ -365,20 +365,11 @@
       "repeatDirection": "v",
       "targets": [
         {
-          "expr": "sum(max(increase(sma_feeding_energy_total[1d])) by (serial))",
-          "format": "table",
-          "hide": false,
-          "instant": false,
+          "expr": "max(increase(sma_feeding_energy_total[1d])) by (serial)",
+          "format": "time_series",
           "interval": "1d",
           "legendFormat": "",
           "refId": "A"
-        },
-        {
-          "expr": "max(increase(sma_feeding_energy_total[1d])) by (serial)",
-          "hide": true,
-          "interval": "1d",
-          "legendFormat": "",
-          "refId": "B"
         }
       ],
       "timeFrom": null,
@@ -388,6 +379,13 @@
         {
           "id": "seriesToColumns",
           "options": {}
+        },
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "Summe",
+            "reducer": "sum"
+          }
         }
       ],
       "type": "table"
@@ -421,8 +419,8 @@
       },
       "gridPos": {
         "h": 2,
-        "w": 19,
-        "x": 5,
+        "w": 16,
+        "x": 8,
         "y": 5
       },
       "hideTimeOverride": true,
@@ -496,8 +494,8 @@
       "fillGradient": 0,
       "gridPos": {
         "h": 16,
-        "w": 19,
-        "x": 5,
+        "w": 16,
+        "x": 8,
         "y": 7
       },
       "hiddenSeries": false,
@@ -613,7 +611,7 @@
       "365d"
     ]
   },
-  "timezone": "utc",
+  "timezone": "browser",
   "title": "Photovoltaik Raspi",
   "uid": "Pjc-I4eWz",
   "version": 1

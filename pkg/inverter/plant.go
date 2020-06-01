@@ -3,7 +3,6 @@ package inverter
 import (
 	"fmt"
 
-	// "github.com/chrischdi/sma-solar-exporter/pkg/inverter"
 	"github.com/chrischdi/sma-solar-exporter/pkg/yasdi"
 )
 
@@ -16,10 +15,7 @@ type Plant struct {
 	devices   int
 }
 
-// TODO add parameter for enabled metric channels and ensure they are found during detection
-
 func NewPlant(yasdiFile string, driverID, devices int, channels []string) (*Plant, error) {
-
 	return &Plant{
 		Inverters: nil,
 		Channels:  channels,
