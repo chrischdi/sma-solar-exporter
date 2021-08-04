@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/chrischdi/sma-solar-exporter/pkg/plant"
@@ -20,7 +21,7 @@ var (
 	yasdiDevices = flag.Int("yasdi-devices", 2, "The number of inverters expected to get detected.")
 
 	influxUrl    = flag.String("influx-url", "", "URL of InfluxDB server")
-	influxToken  = flag.String("influx-token", "", "Token (influx 2.x) or username:password (influx 1.8) to authenticate with")
+	influxToken  = flag.String("influx-token", "", "Token (influx 2.x) or username:password (influx 1.8) to authenticate with. INFLUX_TOKEN environment variable will be used if present instead of this parameter.")
 	influxOrg    = flag.String("influx-org", "", "Organization name (optional for influx 1.8)")
 	influxBucket = flag.String("influx-bucket", "", "Bucket name (influx 2.x) or database/retention-policy (influx 1.8) or database (influx 1.8)")
 )
@@ -45,6 +46,10 @@ func main() {
 
 	var influxConfig *plant.InfluxClient
 	if *influxUrl != "" {
+		influxEnvToken := os.Getenv("INFLUX_TOKEN")
+		if influxEnvToken != "" {
+			influxToken = &influxEnvToken
+		}
 		influxConfig = &plant.InfluxClient{
 			Url:    *influxUrl,
 			Token:  *influxToken,
