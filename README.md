@@ -12,16 +12,24 @@ The physical connection can be done via RS232, RS485 or Powerline.
 ```
 $ sma-solar-exporter -h
 Usage of ./sma-solar-exporter:
+  -influx-bucket string
+        Bucket name (influx 2.x) or database/retention-policy (influx 1.8) or database (influx 1.8)
+  -influx-org string
+        Organization name (optional for influx 1.8)
+  -influx-token string
+        Token (influx 2.x) or username:password (influx 1.8) to authenticate with
+  -influx-url string
+        URL of InfluxDB server
   -metric-channels string
-    	A comma separated list of channel names which should get exposed as metric. (default "A.Ms.Amp,A.Ms.Vol,A.Ms.Watt,E-Total,GridMs.PhV.phsA,Mt.TotOpTmh,Mt.TotTmh,Pac")
+        A comma separated list of channel names which should get exposed as metric. (default "A.Ms.Amp,A.Ms.Vol,A.Ms.Watt,E-Total,GridMs.PhV.phsA,Mt.TotOpTmh,Mt.TotTmh,Pac")
   -metrics-addr string
-    	The address the metric endpoint binds to. (default ":8080")
+        The address the metric endpoint binds to. (default ":8080")
   -yasdi-config string
-    	The path to the yasdi config file. (default "/etc/yasdi/yasdi.ini")
+        The path to the yasdi config file. (default "/etc/yasdi/yasdi.ini")
   -yasdi-devices int
-    	The number of inverters expected to get detected. (default 2)
+        The number of inverters expected to get detected. (default 2)
   -yasdi-driver int
-    	The driver reference in yasdi-config to use.
+        The driver reference in yasdi-config to use.
 ```
 
 ## Configuration
