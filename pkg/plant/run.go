@@ -17,7 +17,7 @@ var (
 	detectionSteps = 0
 )
 
-func Run(init Initializer, channels []string) (err error) {
+func Run(init Initializer, channels []string, influxClient *InfluxClient) (err error) {
 	// We want to execute shutdown on errors
 	defer func() {
 		if err != nil {
@@ -50,7 +50,7 @@ func Run(init Initializer, channels []string) (err error) {
 	}
 
 	klog.Info("creating plant")
-	p, err := NewPlant(init, inverters, channels)
+	p, err := NewPlant(init, inverters, channels, influxClient)
 	if err != nil {
 		return err
 	}

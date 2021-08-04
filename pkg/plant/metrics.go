@@ -1,21 +1,28 @@
 package plant
 
 import (
+	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
+	"github.com/influxdata/influxdb-client-go/v2/api/write"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 )
 
+type MetricItems struct {
+	PrometheusGauge *prometheus.GaugeVec
+	InfluxPoint *write.Point
+}
+
 var (
 	// The metrics, for descriptions see RegisterMetrics
 
-	MetricDCCurrent          *prometheus.GaugeVec
-	MetricDCVoltage          *prometheus.GaugeVec
-	MetricDCPower            *prometheus.GaugeVec
-	MetricETotal             *prometheus.GaugeVec
-	MetricHoursTotal         *prometheus.GaugeVec
-	MetricInverterHoursTotal *prometheus.GaugeVec
-	MetricGridVoltage        *prometheus.GaugeVec
-	MetricActivePower        *prometheus.GaugeVec
+	MetricDCCurrent          *MetricItems
+	MetricDCVoltage          *MetricItems
+	MetricDCPower            *MetricItems
+	MetricETotal             *MetricItems
+	MetricHoursTotal         *MetricItems
+	MetricInverterHoursTotal *MetricItems
+	MetricGridVoltage        *MetricItems
+	MetricActivePower        *MetricItems
 	MetricScrapeDuration     *prometheus.HistogramVec
 
 	// metricsMinimumValue is used during scrape to skip too low values.
@@ -28,62 +35,86 @@ var (
 	}
 
 	// channelToMetricMapping contains a mapping from channels to their corresponding metric
-	channelToMetricMapping map[string]*prometheus.GaugeVec
+	channelToMetricMapping map[string]*MetricItems
 
 	metricLabels = []string{"serial", "inverter_name", "channel_name", "unit"}
 )
 
 func RegisterMetrics() {
-	MetricDCCurrent = promauto.NewGaugeVec(prometheus.GaugeOpts{
-		Namespace: "sma",
-		Subsystem: "dc",
-		Name:      "current",
-		Help:      "DC current in A",
-	}, metricLabels)
-	MetricDCVoltage = promauto.NewGaugeVec(prometheus.GaugeOpts{
-		Namespace: "sma",
-		Subsystem: "dc",
-		Name:      "voltage",
-		Help:      "DC voltage in V",
-	}, metricLabels)
-	MetricDCPower = promauto.NewGaugeVec(prometheus.GaugeOpts{
-		Namespace: "sma",
-		Subsystem: "dc",
-		Name:      "power",
-		Help:      "DC power",
-	}, metricLabels)
+	MetricDCCurrent = &MetricItems{
+		PrometheusGauge: promauto.NewGaugeVec(prometheus.GaugeOpts{
+			Namespace: "sma",
+			Subsystem: "dc",
+			Name:      "current",
+			Help:      "DC current in A",
+		}, metricLabels),
+		InfluxPoint: influxdb2.NewPointWithMeasurement("sma.dc.current"),
+	}
+	MetricDCVoltage = &MetricItems{
+		PrometheusGauge: promauto.NewGaugeVec(prometheus.GaugeOpts{
+			Namespace: "sma",
+			Subsystem: "dc",
+			Name:      "voltage",
+			Help:      "DC voltage in V",
+		}, metricLabels),
+		InfluxPoint: influxdb2.NewPointWithMeasurement("sma.dc.voltage"),
+	}
+	MetricDCPower = &MetricItems{
+		PrometheusGauge: promauto.NewGaugeVec(prometheus.GaugeOpts{
+			Namespace: "sma",
+			Subsystem: "dc",
+			Name:      "power",
+			Help:      "DC power",
+		}, metricLabels),
+		InfluxPoint: influxdb2.NewPointWithMeasurement("sma.dc.power"),
+	}
 
-	MetricETotal = promauto.NewGaugeVec(prometheus.GaugeOpts{
-		Namespace: "sma",
-		Subsystem: "feeding",
-		Name:      "energy_total",
-		Help:      "Total amount of feeding-in energy in kWh",
-	}, metricLabels)
-	MetricHoursTotal = promauto.NewGaugeVec(prometheus.GaugeOpts{
-		Namespace: "sma",
-		Subsystem: "feeding",
-		Name:      "hours_total",
-		Help:      "Total number of grid-feeding operational hours",
-	}, metricLabels)
-	MetricInverterHoursTotal = promauto.NewGaugeVec(prometheus.GaugeOpts{
-		Namespace: "sma",
-		Subsystem: "operating",
-		Name:      "hours_total",
-		Help:      "Total number of operating hours of inverter",
-	}, metricLabels)
+	MetricETotal = &MetricItems{
+		PrometheusGauge: promauto.NewGaugeVec(prometheus.GaugeOpts{
+			Namespace: "sma",
+			Subsystem: "feeding",
+			Name:      "energy_total",
+			Help:      "Total amount of feeding-in energy in kWh",
+		}, metricLabels),
+		InfluxPoint: influxdb2.NewPointWithMeasurement("sma.feeding.energy_total"),
+	}
+	MetricHoursTotal = &MetricItems{
+		PrometheusGauge: promauto.NewGaugeVec(prometheus.GaugeOpts{
+			Namespace: "sma",
+			Subsystem: "feeding",
+			Name:      "hours_total",
+			Help:      "Total number of grid-feeding operational hours",
+		}, metricLabels),
+		InfluxPoint: influxdb2.NewPointWithMeasurement("sma.feeding.hours_total"),
+	}
+	MetricInverterHoursTotal = &MetricItems{
+		PrometheusGauge: promauto.NewGaugeVec(prometheus.GaugeOpts{
+			Namespace: "sma",
+			Subsystem: "operating",
+			Name:      "hours_total",
+			Help:      "Total number of operating hours of inverter",
+		}, metricLabels),
+		InfluxPoint: influxdb2.NewPointWithMeasurement("sma.operating.hours_total"),
+	}
 
-	MetricGridVoltage = promauto.NewGaugeVec(prometheus.GaugeOpts{
-		Namespace: "sma",
-		Subsystem: "grid",
-		Name:      "phase_voltage",
-		Help:      "Grid voltage on phase in V",
-	}, metricLabels)
-	MetricActivePower = promauto.NewGaugeVec(prometheus.GaugeOpts{
-		Namespace: "sma",
-		// Subsystem: "grid",
-		Name: "actual_power",
-		Help: "Delivered active power in W",
-	}, metricLabels)
+	MetricGridVoltage = &MetricItems{
+		PrometheusGauge: promauto.NewGaugeVec(prometheus.GaugeOpts{
+			Namespace: "sma",
+			Subsystem: "grid",
+			Name:      "phase_voltage",
+			Help:      "Grid voltage on phase in V",
+		}, metricLabels),
+		InfluxPoint: influxdb2.NewPointWithMeasurement("sma.grid.phase_voltage"),
+	}
+	MetricActivePower = &MetricItems{
+		PrometheusGauge: promauto.NewGaugeVec(prometheus.GaugeOpts{
+			Namespace: "sma",
+			// Subsystem: "grid",
+			Name: "actual_power",
+			Help: "Delivered active power in W",
+		}, metricLabels),
+		InfluxPoint: influxdb2.NewPointWithMeasurement("sma.grid.actual_power"),
+	}
 
 	MetricScrapeDuration = promauto.NewHistogramVec(prometheus.HistogramOpts{
 		Namespace: "sma",
@@ -92,7 +123,7 @@ func RegisterMetrics() {
 		Help:      "The time needed to scrape the plant",
 	}, nil)
 
-	channelToMetricMapping = map[string]*prometheus.GaugeVec{
+	channelToMetricMapping = map[string]*MetricItems {
 		"A.Ms.Amp":        MetricDCCurrent,
 		"B.Ms.Amp":        MetricDCCurrent,
 		"A.Ms.Vol":        MetricDCVoltage,

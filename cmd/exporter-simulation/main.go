@@ -32,7 +32,7 @@ func main() {
 
 	plant.RegisterMetrics()
 
-	if err := plant.Run(&init, channels); err != nil {
+	if err := plant.Run(&init, channels, nil); err != nil {
 		klog.Fatalf("error starting metrics loop: %v", err)
 	}
 	klog.Info("metrics loop  was started")

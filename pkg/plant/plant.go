@@ -1,7 +1,10 @@
 package plant
 
 import (
+	"context"
 	"fmt"
+	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
+	"github.com/influxdata/influxdb-client-go/v2/api"
 	"time"
 
 	"github.com/chrischdi/sma-solar-exporter/pkg/inverter"
@@ -15,9 +18,17 @@ type Plant struct {
 	Inverters   []inverter.ScrapeableInverter
 	Channels    []string
 	Initializer Initializer
+	InfluxApi   api.WriteAPIBlocking
 }
 
-func NewPlant(init Initializer, inverters []inverter.ScrapeableInverter, channels []string) (*Plant, error) {
+type InfluxClient struct {
+	Url    string
+	Token  string
+	Org    string
+	Bucket string
+}
+
+func NewPlant(init Initializer, inverters []inverter.ScrapeableInverter, channels []string, influxClient *InfluxClient) (*Plant, error) {
 	// check if there are channels given we cannot handle
 	for _, channel := range channels {
 		if _, ok := channelToMetricMapping[channel]; !ok {
@@ -25,10 +36,17 @@ func NewPlant(init Initializer, inverters []inverter.ScrapeableInverter, channel
 		}
 	}
 
+	var writeApi api.WriteAPIBlocking
+	if influxClient != nil {
+		client := influxdb2.NewClient(influxClient.Url, influxClient.Token)
+		writeApi = client.WriteAPIBlocking(influxClient.Org, influxClient.Bucket)
+	}
+
 	return &Plant{
 		Inverters:   inverters,
 		Channels:    channels,
 		Initializer: init,
+		InfluxApi:   writeApi,
 	}, nil
 }
 
@@ -60,7 +78,19 @@ func (p *Plant) Scrape() {
 				klog.Warningf("error getting unit for channel %q for inverter %d: %v", channelName, i.GetSerialNumber(), err)
 			}
 
-			metric.WithLabelValues(fmt.Sprintf("%d", i.GetSerialNumber()), i.GetName(), channelName, unit).Set(v)
+			metric.PrometheusGauge.WithLabelValues(fmt.Sprintf("%d", i.GetSerialNumber()), i.GetName(), channelName, unit).Set(v)
+			if p.InfluxApi != nil {
+				point := metric.InfluxPoint.AddTag("serial", fmt.Sprintf("%d", i.GetSerialNumber())).
+					AddTag("inverter_name", i.GetName()).
+					AddTag("channel_name", channelName).
+					AddTag("unit", unit).
+					AddField("value", v).
+					SetTime(time.Now())
+				err = p.InfluxApi.WritePoint(context.Background(), point)
+				if err != nil {
+					klog.Warningf("failed sending metric to influxDB for channel %q for inverter %d: %v", channelName, i.GetSerialNumber(), err)
+				}
+			}
 		}
 	}
 	MetricScrapeDuration.WithLabelValues().Observe(time.Since(start).Seconds())
