@@ -15,7 +15,7 @@ MISSPELL_VERSION     ?= c0b55c8239520f6b5aa15a0207ca8b28027ba49e
 MISSPELL             ?= $(GOBIN)/misspell-$(MISSPELL_VERSION)
 FAILLINT_VERSION     ?= v1.2.0
 FAILLINT             ?= $(GOBIN)/faillint-$(FAILLINT_VERSION)
-YASDI_URL            ?= https://files.sma.de/dl/11705/yasdi-1.8.1build9-src.zip
+YASDI_URL            ?= https://github.com/SolarNetwork/yasdi/archive/refs/heads/master.zip
 YASDI                ?= $(PREFIX)/yasdi
 
 # fetch_go_bin_version downloads (go gets) the binary from specific version and installs it in $(GOBIN)/<bin>-<version>
@@ -73,13 +73,14 @@ lint: $(FAILLINT) $(GOLANGCILINT) $(MISSPELL)
 	@go vet -stdmethods=false ./pkg/... ./cmd/...
 
 yasdi:
-	@mkdir -p yasdi
+	@mkdir -p yasdi-tmp
 	
 	@echo ">> fetching yasdi from $(YASDI_URL)"
-	@curl --output yasdi/yasdi.zip $(YASDI_URL)
-	@echo ">> unpacking yasdi/yasdi.zip"
-	@CDPATH='' cd -- 'yasdi' && unzip yasdi.zip && rm -rf yasdi.zip
-	
+	@curl -L --output yasdi-tmp/yasdi.zip $(YASDI_URL)
+	@echo ">> unpacking yasdi-tmp/yasdi.zip"
+	@CDPATH='' cd -- 'yasdi-tmp' && unzip yasdi.zip && mv yasdi-master ../yasdi
+	@rm -rf yasdi-tmp
+
 	@mkdir -p yasdi/projects/generic-cmake/build-gcc
 	@CDPATH='' cd -- 'yasdi/projects/generic-cmake/build-gcc' && cmake .. && make
 	
