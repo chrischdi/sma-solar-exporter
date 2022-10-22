@@ -83,7 +83,7 @@ func Test_Run(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := Run(tt.init, tt.channels); (err != nil) != tt.wantErr {
+			if err := Run(tt.init, tt.channels, nil); (err != nil) != tt.wantErr {
 				t.Errorf("run() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
