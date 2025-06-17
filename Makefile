@@ -9,13 +9,14 @@ GOBIN             ?= $(firstword $(subst :, ,${GOPATH}))/bin
 GO111MODULE       ?= on
 export GO111MODULE
 
-GOLANGCILINT_VERSION ?= d2b1eea2c6171a1a1141a448a745335ce2e928a1
+GOLANGCILINT_VERSION ?= v1.50.0
 GOLANGCILINT         ?= $(GOBIN)/golangci-lint-$(GOLANGCILINT_VERSION)
-MISSPELL_VERSION     ?= c0b55c8239520f6b5aa15a0207ca8b28027ba49e
+MISSPELL_VERSION     ?= v0.3.4
 MISSPELL             ?= $(GOBIN)/misspell-$(MISSPELL_VERSION)
-FAILLINT_VERSION     ?= v1.2.0
+FAILLINT_VERSION     ?= v1.11.0
 FAILLINT             ?= $(GOBIN)/faillint-$(FAILLINT_VERSION)
-YASDI_URL            ?= https://files.sma.de/dl/11705/yasdi-1.8.1build9-src.zip
+YASDI_GIT_REPO       ?= https://github.com/konstantinblaesi/yasdi.git
+YASDI_GIT_TAG				 ?= v1.8.3
 YASDI                ?= $(PREFIX)/yasdi
 
 # fetch_go_bin_version downloads (go gets) the binary from specific version and installs it in $(GOBIN)/<bin>-<version>
@@ -73,15 +74,11 @@ lint: $(FAILLINT) $(GOLANGCILINT) $(MISSPELL)
 	@go vet -stdmethods=false ./pkg/... ./cmd/...
 
 yasdi:
-	@mkdir -p yasdi
+	@echo ">> fetching yasdi from $(YASDI_GIT_REPO)"
+	@git clone --depth 1 --branch $(YASDI_GIT_TAG) $(YASDI_GIT_REPO)
 	
-	@echo ">> fetching yasdi from $(YASDI_URL)"
-	@curl --output yasdi/yasdi.zip $(YASDI_URL)
-	@echo ">> unpacking yasdi/yasdi.zip"
-	@CDPATH='' cd -- 'yasdi' && unzip yasdi.zip && rm -rf yasdi.zip
-	
-	@mkdir -p yasdi/projects/generic-cmake/build-gcc
-	@CDPATH='' cd -- 'yasdi/projects/generic-cmake/build-gcc' && cmake .. && make
+	@mkdir -p yasdi/sdk/projects/generic-cmake/build-gcc
+	@CDPATH='' cd -- 'yasdi/sdk/projects/generic-cmake/build-gcc' && cmake .. && make
 	
 	@echo ">> yasdi is now prepared"
 
